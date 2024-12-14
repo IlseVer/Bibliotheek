@@ -1,0 +1,12 @@
+# gecompileerde bestanen of mappen waar we die terugvinden
+__pycache__/
+*.py[cod]
+*$py.class
+
+# verborgen map van de virtuele omgeving
+.venv
+venv/
+
+# de database zelf
+dbBibliotheek.db
+
