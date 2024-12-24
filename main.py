@@ -50,10 +50,10 @@ def main():
 
             while True:
                 try:
-                    locatie = int(input("Kies een plank ID (of 0 voor geen locatie): "))
-                    if locatie == 0:
-                        locatie = None
-                    elif not any(p['id'] == locatie for p in planken):
+                    planknummer = int(input("Kies een plank ID (of 0 voor geen locatie): "))
+                    if planknummer == 0:
+                        planknummer = None
+                    elif not any(p['id'] == planknummer for p in planken):
                         print("Ongeldige plank ID")
                         continue
                     break
@@ -77,7 +77,7 @@ def main():
                     print("Voer een geldig nummer in")
 
             # Voeg het boek toe
-            boek_id = boek_model.add_boek(titel, publicatiejaar, locatie, beschikbaarheid_id)
+            boek_id = boek_model.add_boek(titel, publicatiejaar, planknummer, beschikbaarheid_id)
             print(f"Boek '{titel}' is toegevoegd met ID {boek_id}")
 
         elif keuze == '2':
@@ -95,7 +95,6 @@ def main():
         else:
             print("Ongeldige keuze, probeer het opnieuw.")
 
-    # Sluit de databaseverbinding
     db.close_connection()
 
 
