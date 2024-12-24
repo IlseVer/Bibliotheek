@@ -12,3 +12,8 @@ class Boekenwand:
             )
         ''')
         self.conn.commit()
+
+    def get_all_boekenwanden(self):
+        """Haal alle boekenwanden op."""
+        self.cursor.execute('SELECT * FROM Boekenwand')
+        return self.cursor.fetchall()

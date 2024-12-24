@@ -10,8 +10,12 @@ class Boek:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 titel TEXT NOT NULL,
                 publicatiejaar INTEGER NOT NULL,
-                locatie INTEGER,
+                auteur_id INTEGER NOT NULL,
+                genre_id INTEGER NOT NULL,
+                plank_id INTEGER,
                 beschikbaarheid_id INTEGER,
+                FOREIGN KEY (auteur_id) REFERENCES Auteur(id),
+                FOREIGN KEY (genre_id) REFERENCES Genre(id),
                 FOREIGN KEY (locatie) REFERENCES Plank(id),
                 FOREIGN KEY (beschikbaarheid_id) REFERENCES Beschikbaarheid(id)
             )
