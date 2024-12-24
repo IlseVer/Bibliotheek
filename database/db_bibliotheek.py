@@ -1,13 +1,13 @@
 import sqlite3
 
-from database.boek import Boek
-from database.auteur import Auteur
+from database.dbBoek import Boek
+from database.dbAuteur import Auteur
 from database.genre import Genre
 from database.genre_boek import GenreBoek
 from database.boek_auteur import BoekAuteur
-from database.beschikbaarheid import Beschikbaarheid
+from database.dbBeschikbaarheid import Beschikbaarheid
 from database.boekenwand import Boekenwand
-from database.plank import Plank
+from database.dbPlank import Plank
 
 class DbBibliotheek:
     def __init__(self, database_file):
