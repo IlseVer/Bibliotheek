@@ -12,7 +12,7 @@ class Boek:
                 publicatiejaar INTEGER NOT NULL,
                 auteur_id INTEGER NOT NULL,
                 genre_id INTEGER NOT NULL,
-                plank_id INTEGER,
+                locatie INTEGER,
                 beschikbaarheid_id INTEGER,
                 FOREIGN KEY (auteur_id) REFERENCES Auteur(id),
                 FOREIGN KEY (genre_id) REFERENCES Genre(id),

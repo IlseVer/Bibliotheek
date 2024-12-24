@@ -5,8 +5,7 @@ from database.dbAuteur import Auteur
 from database.genre import Genre
 from database.genre_boek import GenreBoek
 from database.boek_auteur import BoekAuteur
-from database.dbBeschikbaarheid import Beschikbaarheid
-from database.boekenwand import Boekenwand
+from database.beschikbaarheid import Beschikbaarheid
 from database.dbPlank import Plank
 
 class DbBibliotheek:
@@ -35,15 +34,14 @@ class DbBibliotheek:
 
     def tables_exist(self):
         """Controleren of de tabellen al bestaan in de database."""
-        tabelnamen = ['Boek', 'Auteur', 'Genre', 'Genre_Boek', 'Boek_Auteur', 'Beschikbaarheid', 'Boekenwand', 'Plank']
+        tabelnamen = ['Boek', 'Auteur', 'Genre', 'Genre_Boek', 'Boek_Auteur', 'Beschikbaarheid', 'Plank']
 
         for tabel in tabelnamen:
             query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tabel}';"
             self.cursor.execute(query)
             if not self.cursor.fetchone():
-                return False  # Als een van de tabellen niet bestaat, geef False terug
-
-        return True  # Alle tabellen bestaan al
+                return False
+        return True
 
     def create_tables(self):
         """alle tabellen aanmaken in de database."""
@@ -58,7 +56,6 @@ class DbBibliotheek:
         self.db_genre_boek = GenreBoek(self.conn)
         self.db_boek_auteur = BoekAuteur(self.conn)
         self.db_beschikbaarheid = Beschikbaarheid(self.conn)
-        self.db_boekenwand = Boekenwand(self.conn)
         self.db_plank = Plank(self.conn)
 
         # tabellen aanmaken
@@ -68,7 +65,6 @@ class DbBibliotheek:
         self.db_genre_boek.create_table()
         self.db_boek_auteur.create_table()
         self.db_beschikbaarheid.create_table()
-        self.db_boekenwand.create_table()
         self.db_plank.create_table()
         print("Tabellen aangemaakt.")
 

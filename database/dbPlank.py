@@ -8,20 +8,14 @@ class Plank:
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS Plank (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nummer INTEGER NOT NULL,
-                boekenwand_id INTEGER,
-                FOREIGN KEY (boekenwand_id) REFERENCES Boekenwand(id)
+                nummer INTEGER NOT NULL
             )
         ''')
         self.conn.commit()
 
     def get_all_planks(self):
-        """Haal alle planken op met hun boekenwand."""
-        self.cursor.execute("""
-             SELECT Plank.*, Boekenwand.naam as boekenwand_naam 
-             FROM Plank 
-             LEFT JOIN Boekenwand ON Plank.boekenwand_id = Boekenwand.id
-         """)
+        """Haal alle planken op."""
+        self.cursor.execute("SELECT * FROM Plank")
         return self.cursor.fetchall()
 
 

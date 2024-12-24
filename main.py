@@ -1,26 +1,16 @@
 from database.db_bibliotheek import DbBibliotheek
 from database.dbBoek import Boek
 from database.dbPlank import Plank
-from database.dbBeschikbaarheid import Beschikbaarheid
-
-# er moeten statussen bestaan
-def setup_beschikbaarheid(beschikbaarheid_model):
-    statussen = beschikbaarheid_model.get_all_statuses()
-    if not statussen:
-        basis_statussen = ["Beschikbaar", "Uitgeleend", "In Restauratie", "Zoek"]
-        for status in basis_statussen:
-            beschikbaarheid_model.add_status(status)
+from database.beschikbaarheid import Beschikbaarheid
 
 
 def main():
-    db = DbBibliotheek('database/bibliotheek.db')
+    db = DbBibliotheek('database/bib.db')
 
     boek_model = Boek(db.conn)
     plank_model = Plank(db.conn)
     beschikbaarheid_model = Beschikbaarheid(db.conn)
 
-    # beschikbaarheidsstatussen
-    setup_beschikbaarheid(beschikbaarheid_model)
 
     while True:
         print("\n1. Voeg boek toe")
@@ -45,12 +35,11 @@ def main():
 
             print("\nBeschikbare planken:")
             for plank in planken:
-                print(f"ID: {plank['id']}, Plank {plank['nummer']}",
-                      f"(Boekenwand: {plank['boekenwand_naam']})" if plank['boekenwand_naam'] else "")
+                print(f"{plank['id']}: Plank {plank['nummer']}")
 
             while True:
                 try:
-                    planknummer = int(input("Kies een plank ID (of 0 voor geen locatie): "))
+                    planknummer = int(input("Kies een plank (of 0 voor geen locatie): "))
                     if planknummer == 0:
                         planknummer = None
                     elif not any(p['id'] == planknummer for p in planken):
@@ -96,7 +85,6 @@ def main():
             print("Ongeldige keuze, probeer het opnieuw.")
 
     db.close_connection()
-
 
 if __name__ == "__main__":
     main()
