@@ -1,4 +1,3 @@
-from database.dbAuteur import Auteur
 from database.db_bibliotheek import DbBibliotheek
 from database.dbBoek import Boek
 from database.dbPlank import Plank
