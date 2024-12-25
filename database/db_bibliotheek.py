@@ -33,7 +33,7 @@ class DbBibliotheek:
 
     #Controleren of de tabellen al bestaan in de database
     def tables_exist(self):
-        tabelnamen = ['Boek', 'Auteur', 'Genre', 'Genre_Boek', 'Boek_Auteur', 'Beschikbaarheid', 'Plank']
+        tabelnamen = ['Boek', 'Auteur', 'Genre', 'Boek_Auteur', 'Beschikbaarheid', 'Plank']
 
         for tabel in tabelnamen:
             query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tabel}';"

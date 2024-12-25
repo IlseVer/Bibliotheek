@@ -26,7 +26,6 @@ class Plank:
         for nummer in planken:
             if nummer not in bestaande_planken:
                 self.cursor.execute("INSERT INTO Plank (nummer) VALUES (?)", (nummer,))
-                print(f"Plank {nummer} toegevoegd.")
         self.conn.commit()
 
 

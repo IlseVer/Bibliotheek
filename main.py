@@ -20,11 +20,11 @@ def main():
     beschikbaarheid_model.insert_default_values()
 
     while True:
-        print("\n1. Voeg boek toe")
-        print("2. Toon alle boeken")
-        print("3. Beheer genres")
-        print("4. Stop")
-        keuze = input("Maak een keuze: ")
+        print("\n1: Voeg boek toe")
+        print("2: Toon alle boeken")
+        print("3: Beheer genres")
+        print("4: exit")
+        keuze = input("Maak een keuze: ").strip().lower()
 
         if keuze == '1':
             titel = input("Voer de titel van het boek in: ")
@@ -40,30 +40,41 @@ def main():
             naam = input("Voer de naam van de auteur in: ")
             auteur_id = auteur_model.add_auteur(naam, voornaam)
 
+            #controleren als er al genres aanwezig zijn
             genres = genre_model.get_all_genres()
+            #GEEN genres aanwezig:
             if not genres:
                 print("Er zijn nog geen genres. Maak eerst een genre aan.")
-                continue
-
-            # beschikbare genres tonen:
-            print("\nBeschikbare genres:")
-            for genre in genres:
-                print(f"{genre['id']}: Genre {genre['genre']}")
-
-            while True:
-                try:
-                    genre_id = int(input("Kies een genre ID (of 0 om een nieuw genre toe te voegen): "))
-                    if genre_id == 0:
-                        nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
+                while True:
+                    nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
+                    if nieuw_genre.strip():
                         genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
-                        if genre_id:
-                            print(f"Genre '{nieuw_genre}' toegevoegd met ID {genre_id}.")
-                    elif not any(g['id'] == genre_id for g in genres):
-                        print("Ongeldige genre ID")
-                        continue
-                    break
-                except ValueError:
-                    print("Voer een geldig nummer in")
+                        print(f"Genre '{nieuw_genre}' toegevoegd met ID {genre_id}.")
+                        genres = genre_model.get_all_genres()
+                        break
+                    else:
+                        print("Genre naam mag niet leeg zijn. Probeer opnieuw.")
+
+            # WEl genres aanwezig
+            else:
+                print("\nBeschikbare genres:")
+                for genre in genres:
+                    print(f"{genre['id']}: {genre['genre']}")
+
+                while True:
+                    try:
+                        genre_id = int(input("Kies een genre ID (of 0 om een nieuw genre toe te voegen): "))
+                        if genre_id == 0:
+                            nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
+                            genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
+                            if genre_id:
+                                print(f"Genre '{nieuw_genre}'.")
+                        elif not any(g['id'] == genre_id for g in genres):
+                            print("Ongeldige genre ID")
+                            continue
+                        break
+                    except ValueError:
+                        print("Voer een geldig nummer in")
 
 
             # Toon beschikbare planken
@@ -93,7 +104,7 @@ def main():
             statussen = beschikbaarheid_model.get_all_statuses()
             print("\nBeschikbare statussen:")
             for status in statussen:
-                print(f"ID: {status['id']}, Status: {status['status']}")
+                print(f"{status['id']}: {status['status']}")
 
             while True:
                 try:
@@ -150,7 +161,7 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
-        elif keuze == '4':
+        elif keuze == '4' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
             break
