@@ -1,3 +1,8 @@
+import sys
+import csv
+import openpyxl
+import pandas as pd
+
 from database.db_bibliotheek import DbBibliotheek
 from database.dbBoek import Boek
 from database.dbPlank import Plank
@@ -24,9 +29,11 @@ def main():
         print("2: Toon alle boeken")
         print("3: Zoek boeken")
         print("4: Beheer genres")
-        print("5: exit")
+        print("5: Exporteer boekenlijst naar Excel of csv")
+        print("6: Sluit het programma")
         keuze = input("Maak een keuze: ").strip().lower()
 
+        # 1: VOEG BOEK TOE
         if keuze == '1':
             titel = input("Voer de titel van het boek in: ")
             while True:
@@ -123,6 +130,7 @@ def main():
             # auteur koppelen aan boek
             boek_auteur_model.add_boek_auteur(boek_id, auteur_id)
 
+        # 2: TOON ALLE BOEKEN
         elif keuze == '2':
             boeken = boek_model.get_all_books()
             print("\nAlle boeken:")
@@ -135,44 +143,58 @@ def main():
                 print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
                 print("-" * 50)
 
+        # 3: ZOEK Boeken (1: op titel of 2:op genre)
         elif keuze == '3':
             while True:
                 print("\nZoekmenu:")
-                print("1. Zoek op titel")
-                print("2. Zoek op genre")
-                print("3. Ga terug naar hoofdmenu")
+                print("1: Zoek op titel")
+                print("2: Zoek op genre")
+                print("3: Ga terug naar hoofdmenu")
+                print("4: exit")
                 subkeuze = input("Maak een keuze: ")
 
                 if subkeuze == '1':
                     zoekterm = input("Voer de titel (of deel van de titel) in: ")
                     resultaten = boek_model.search_books_by_title(zoekterm)
-                    print(f"\nZoekresultaten voor titel '{zoekterm}':")
-                    for boek in resultaten:
-                        auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
-                        auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
-                        print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
-                        print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
-                        print("-" * 50)
+
+                    if resultaten:
+                        print(f"\nZoekresultaten voor titel '{zoekterm}':")
+                        for boek in resultaten:
+                            auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                            auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                            print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
+                            print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
+                            print("-" * 50)
+                    else:
+                        print(f"Geen titel gevonden met de zoekterm '{zoekterm}'")
 
                 elif subkeuze == '2':
-                    zoekterm = input("Voer het genre in: ")
+                    zoekterm = input("Voer een genre in (of een deel ervan, bijv. 'thr' voor 'thriller'): ")
                     resultaten = boek_model.search_books_by_genre(zoekterm)
-                    print(f"\nZoekresultaten voor genre '{zoekterm}':")
-                    for boek in resultaten:
-                        auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
-                        auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
-                        genre = boek['genre_naam']
-                        print(
-                            f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Genre: {genre}, Jaar: {boek['publicatiejaar']}")
-                        print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
-                        print("-" * 50)
+
+                    if resultaten:
+                        print(f"\nZoekresultaten voor genre '{zoekterm}':")
+                        for boek in resultaten:
+                            auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                            auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                            genre = boek['genre_naam']
+                            print(
+                                f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Genre: {genre}, Jaar: {boek['publicatiejaar']}")
+                            print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
+                            print("-" * 50)
+
 
                 elif subkeuze == '3':
                     break
 
+                elif subkeuze == '4' or subkeuze == 'exit':
+                    print("Programma wordt afgesloten...")
+                    print("Programma afgesloten.")
+                    sys.exit()
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
+        # 4: BEHEER GENRES (1: voeg genre toe, 2: toon genres)
         elif keuze == '4':
             while True:
                 print("\nGenremenu:")
@@ -205,14 +227,88 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
-        elif keuze == '5' or keuze == 'exit':
+        # 5: Exporteer boekenlijst naar Excel
+        elif keuze == '5':
+            while True:
+                print("\nWelk formaat wenst u de exporteren?")
+                print("1: CSV")
+                print("2: Excel")
+                print("3: Ga terug naar hoofdmenu")
+                print("4: exit")
+                subkeuze = input("Maak een keuze: ")
+
+                if subkeuze == '1':
+                    try:
+                        # boekenlijst ophalen
+                        boeken = boek_model.get_all_books()
+
+                        # Open het CSV bestand voor schrijven
+                        with open('boekenlijst.csv', 'w', newline='', encoding='utf-8') as csvfile:
+                            veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Plank', 'Status', 'Genre']
+                            writer = csv.DictWriter(csvfile, fieldnames=veldnamen)
+
+                            writer.writeheader()  # Schrijf de header (kolomnamen)
+
+                            # rijen vullen met gegevens
+                            for boek in boeken:
+                                auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                                auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                                writer.writerow({
+                                    'Titel': boek['titel'],
+                                    'Auteur': auteur_naam,
+                                    'Publicatiejaar': boek['publicatiejaar'],
+                                    'Plank': boek['plank_nummer'] or 'Geen',
+                                    'Status': boek['status'],
+                                    'Genre': boek['genre_naam']
+                                })
+
+                        print("Boekenlijst is succesvol geëxporteerd naar 'boekenlijst.csv'.")
+
+                    except Exception as e:
+                        print(f"Fout bij het exporteren van de boekenlijst: {e}")
+
+                elif subkeuze == '2':
+                    try:
+                        boeken = boek_model.get_all_books()
+
+                        # lijst van dictionaries voor de boeken maken
+                        data = []
+                        for boek in boeken:
+                            auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                            auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                            data.append({
+                                'Titel': boek['titel'],
+                                'Auteur': auteur_naam,
+                                'Publicatiejaar': boek['publicatiejaar'],
+                                'Plank': boek['plank_nummer'] or 'Geen',
+                                'Status': boek['status'],
+                                'Genre': boek['genre_naam']
+                            })
+
+                        # Maak een DataFrame van de data en schrijf naar een Excel-bestand
+                        df = pd.DataFrame(data)
+                        df.to_excel('boekenlijst.xlsx', index=False, engine='openpyxl')
+
+                        print("Boekenlijst is succesvol geëxporteerd naar 'boekenlijst.xlsx'.")
+
+                    except Exception as e:
+                        print(f"Fout bij het exporteren van de boekenlijst naar Excel: {e}")
+
+                elif subkeuze == '3':
+                    break
+                elif subkeuze == '4' or subkeuze == 'exit':
+                    print("Programma wordt afgesloten...")
+                    print("Programma afgesloten.")
+                    sys.exit()
+                else:
+                    print("Ongeldige keuze, probeer het opnieuw.")
+
+        elif keuze == '6' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
-            break
+            sys.exit()
         else:
             print("Ongeldige keuze, probeer het opnieuw.")
-
-    db.close_connection()
 
 if __name__ == "__main__":
     main()
