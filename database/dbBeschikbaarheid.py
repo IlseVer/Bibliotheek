@@ -32,5 +32,5 @@ class Beschikbaarheid:
 
         if count == 0:  # Alleen toevoegen als er nog geen gegevens zijn
             self.add_status('Beschikbaar')
-            self.add_status('Niet Beschikbaar')
-            self.add_status('Afwezig')
+            self.add_status('Uitgeleend')
+            self.add_status('Zoek')
