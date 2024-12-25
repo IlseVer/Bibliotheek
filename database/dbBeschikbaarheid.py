@@ -13,3 +13,6 @@ class Beschikbaarheid:
         ''')
         self.conn.commit()
 
+    def get_all_statuses(self):
+        self.cursor.execute('SELECT * FROM Beschikbaarheid')
+        return self.cursor.fetchall()

@@ -2,10 +2,9 @@ import sqlite3
 
 from database.dbBoek import Boek
 from database.dbAuteur import Auteur
-from database.genre import Genre
-from database.genre_boek import GenreBoek
+from database.dbGenre import Genre
 from database.boek_auteur import BoekAuteur
-from database.beschikbaarheid import Beschikbaarheid
+from database.dbBeschikbaarheid import Beschikbaarheid
 from database.dbPlank import Plank
 
 class DbBibliotheek:
@@ -14,7 +13,7 @@ class DbBibliotheek:
         self.conn = None
         self.cursor = None
 
-        # Pverbinding proberen te maken met de database
+        # Verbinding proberen te maken met de database
         try:
             self.conn = sqlite3.connect(self.database_file)
             self.conn.row_factory = sqlite3.Row
@@ -32,8 +31,8 @@ class DbBibliotheek:
             # Als de verbinding niet lukt, tabellen aanmaken
             self.create_tables()
 
+    #Controleren of de tabellen al bestaan in de database
     def tables_exist(self):
-        """Controleren of de tabellen al bestaan in de database."""
         tabelnamen = ['Boek', 'Auteur', 'Genre', 'Genre_Boek', 'Boek_Auteur', 'Beschikbaarheid', 'Plank']
 
         for tabel in tabelnamen:
@@ -44,8 +43,6 @@ class DbBibliotheek:
         return True
 
     def create_tables(self):
-        """alle tabellen aanmaken in de database."""
-        # nieuwe verbinding aanmaken om tabellen aan te maken
         self.conn = sqlite3.connect(self.database_file)
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
@@ -53,23 +50,20 @@ class DbBibliotheek:
         self.db_auteur = Auteur(self.conn)
         self.db_boek = Boek(self.conn)
         self.db_genre = Genre(self.conn)
-        self.db_genre_boek = GenreBoek(self.conn)
         self.db_boek_auteur = BoekAuteur(self.conn)
         self.db_beschikbaarheid = Beschikbaarheid(self.conn)
         self.db_plank = Plank(self.conn)
 
         # tabellen aanmaken
-        self.db_auteur.create_table()
+        self.db_auteur.create_table()3.
         self.db_boek.create_table()
         self.db_genre.create_table()
-        self.db_genre_boek.create_table()
         self.db_boek_auteur.create_table()
         self.db_beschikbaarheid.create_table()
         self.db_plank.create_table()
         print("Tabellen aangemaakt.")
 
     def close_connection(self):
-        """databaseverbinding sluiten."""
         if self.conn:
             self.conn.close()
 
