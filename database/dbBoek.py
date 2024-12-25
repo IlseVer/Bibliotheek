@@ -41,5 +41,37 @@ class Boek:
         """)
         return self.cursor.fetchall()
 
+    def search_books_by_title(self, title):
+        """Zoek boeken op basis van de titel."""
+        query = """
+        SELECT Boek.*, Plank.nummer as plank_nummer, Beschikbaarheid.status
+        FROM Boek
+        LEFT JOIN Plank ON Boek.plank_id = Plank.id
+        LEFT JOIN Beschikbaarheid ON Boek.beschikbaarheid_id = Beschikbaarheid.id
+        WHERE LOWER(Boek.titel) LIKE LOWER(?)
+        """
+        title_pattern = f"%{title}%"
+        self.cursor.execute(query, (title_pattern,))
+        return self.cursor.fetchall()
+
+    def search_books_by_genre(self, genre):
+        """Zoek boeken op basis van het genre."""
+        genre_pattern = f"%{genre.lower()}%"  # Zorgen dat de input case-insensitive wordt behandeld
+        self.cursor.execute("""
+            SELECT Boek.*, Plank.nummer as plank_nummer, Beschikbaarheid.status, Genre.naam as genre_naam
+            FROM Boek
+            LEFT JOIN Plank ON Boek.plank_id = Plank.id
+            LEFT JOIN Beschikbaarheid ON Boek.beschikbaarheid_id = Beschikbaarheid.id
+            LEFT JOIN Genre ON Boek.genre_id = Genre.id
+            WHERE LOWER(Genre.naam) LIKE ?
+        """, (genre_pattern,))
+
+        resultaten = self.cursor.fetchall()
+
+        if not resultaten:
+            print(f"Geen boeken gevonden voor genre '{genre}'")
+        return resultaten
+
+
 
 

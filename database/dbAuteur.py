@@ -32,3 +32,8 @@ class Auteur:
         """Haal alle auteurs op."""
         self.cursor.execute('SELECT * FROM Auteur')
         return self.cursor.fetchall()
+
+    def get_auteur_by_id(self, auteur_id):
+        self.cursor.execute('SELECT * FROM Auteur WHERE id = ?', (auteur_id,))
+        return self.cursor.fetchone()
+

@@ -1,5 +1,3 @@
-import sqlite3
-
 class Genre:
     def __init__(self, conn):
         self.conn = conn
@@ -24,19 +22,19 @@ class Genre:
         genres = [{'id': row[0], 'genre': row[1]} for row in rows]
         return genres
 
-    def add_genre_if_not_exists(self, naam):
-        self.cursor.execute("SELECT * FROM Genre WHERE naam = ?", (naam,))
-        existing_genre = self.cursor.fetchone()
+    def add_genre_if_not_exists(self, genre_name):
+        query_select = "SELECT id FROM genres WHERE genre = ?"
+        query_insert = "INSERT INTO genres (genre) VALUES (?)"
+        cursor = self.conn.cursor()
 
-        if existing_genre:
-            print(f"Genre '{naam}' bestaat al in de database.")
-            return None
-        else:
-            try:
-                self.cursor.execute("INSERT INTO Genre (naam) VALUES (?)", (naam,))
-                self.conn.commit()  # Zorgt ervoor dat de wijziging wordt doorgevoerd
-                genre_id = self.cursor.lastrowid  # Haalt het ID op van het toegevoegde genre
-                return genre_id
-            except sqlite3.IntegrityError as e:
-                print(f"Genre '{naam}' kon niet worden toegevoegd door een fout: {e}")
-                return None
+        # Controleer of het genre al bestaat
+        cursor.execute(query_select, (genre_name,))
+        result = cursor.fetchone()
+
+        if result:  # Bestaat al
+            return result['id']
+        else:  # Voeg een nieuw genre toe
+            cursor.execute(query_insert, (genre_name,))
+            self.conn.commit()
+            return cursor.lastrowid
+

@@ -22,8 +22,9 @@ def main():
     while True:
         print("\n1: Voeg boek toe")
         print("2: Toon alle boeken")
-        print("3: Beheer genres")
-        print("4: exit")
+        print("3: Zoek boeken")
+        print("4: Beheer genres")
+        print("5: exit")
         keuze = input("Maak een keuze: ").strip().lower()
 
         if keuze == '1':
@@ -50,7 +51,6 @@ def main():
                     if nieuw_genre.strip():
                         genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
                         print(f"Genre '{nieuw_genre}' toegevoegd met ID {genre_id}.")
-                        genres = genre_model.get_all_genres()
                         break
                     else:
                         print("Genre naam mag niet leeg zijn. Probeer opnieuw.")
@@ -68,7 +68,7 @@ def main():
                             nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
                             genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
                             if genre_id:
-                                print(f"Genre '{nieuw_genre}'.")
+                                print(f"Genre '{nieuw_genre}' is toegevoegd.")
                         elif not any(g['id'] == genre_id for g in genres):
                             print("Ongeldige genre ID")
                             continue
@@ -118,7 +118,7 @@ def main():
 
             # Voeg het boek toe
             boek_id = boek_model.add_boek(titel, publicatiejaar, auteur_id, genre_id, plank_id, beschikbaarheid_id)
-            print(f"Boek '{titel}' is toegevoegd met ID {boek_id}")
+            print(f"Boek '{titel}' is succesvol toegevoegd aan de bibliotheek")
 
             # auteur koppelen aan boek
             boek_auteur_model.add_boek_auteur(boek_id, auteur_id)
@@ -127,11 +127,53 @@ def main():
             boeken = boek_model.get_all_books()
             print("\nAlle boeken:")
             for boek in boeken:
-                print(f"{boek['id']}) Titel: {boek['titel']}, Jaar: {boek['publicatiejaar']}")
-                print(f"Plank: {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
+                # naam van de auteur ophalen via het auteur_id
+                auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+
+                print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
+                print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
                 print("-" * 50)
 
         elif keuze == '3':
+            while True:
+                print("\nZoekmenu:")
+                print("1. Zoek op titel")
+                print("2. Zoek op genre")
+                print("3. Ga terug naar hoofdmenu")
+                subkeuze = input("Maak een keuze: ")
+
+                if subkeuze == '1':
+                    zoekterm = input("Voer de titel (of deel van de titel) in: ")
+                    resultaten = boek_model.search_books_by_title(zoekterm)
+                    print(f"\nZoekresultaten voor titel '{zoekterm}':")
+                    for boek in resultaten:
+                        auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                        auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                        print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
+                        print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
+                        print("-" * 50)
+
+                elif subkeuze == '2':
+                    zoekterm = input("Voer het genre in: ")
+                    resultaten = boek_model.search_books_by_genre(zoekterm)
+                    print(f"\nZoekresultaten voor genre '{zoekterm}':")
+                    for boek in resultaten:
+                        auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                        auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                        genre = boek['genre_naam']
+                        print(
+                            f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Genre: {genre}, Jaar: {boek['publicatiejaar']}")
+                        print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
+                        print("-" * 50)
+
+                elif subkeuze == '3':
+                    break
+
+                else:
+                    print("Ongeldige keuze, probeer opnieuw.")
+
+        elif keuze == '4':
             while True:
                 print("\nGenremenu:")
                 print("1. Voeg een nieuw genre toe")
@@ -150,9 +192,11 @@ def main():
 
                 elif subkeuze == '2':
                     genres = genre_model.get_all_genres()
-                    print("\nAlle genres:")
+                    print("-" * 50)
+                    print("Alle genres:")
+
                     for genre in genres:
-                        print(f"ID: {genre['id']}, Naam: {genre['genre']}")
+                        print(f"{genre['id']}. {genre['genre']}")
                     print("-" * 50)
 
                 elif subkeuze == '3':
@@ -161,7 +205,7 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
-        elif keuze == '4' or keuze == 'exit':
+        elif keuze == '5' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
             break
