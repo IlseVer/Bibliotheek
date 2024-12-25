@@ -22,11 +22,11 @@ class Boek:
         ''')
         self.conn.commit()
 
-    def add_boek(self, titel, publicatiejaar, genre_id, plank_id, beschikbaarheid_id):
+    def add_boek(self, titel, publicatiejaar, auteur_id, genre_id, plank_id, beschikbaarheid_id):
         self.cursor.execute("""
-            INSERT INTO Boek (titel, publicatiejaar, genre_id, plank_id, beschikbaarheid_id) 
-            VALUES (?, ?, ?, ?, ?)
-        """, (titel, publicatiejaar, genre_id, plank_id, beschikbaarheid_id))
+            INSERT INTO Boek (titel, publicatiejaar, auteur_id, genre_id, plank_id, beschikbaarheid_id) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (titel, publicatiejaar, auteur_id, genre_id, plank_id, beschikbaarheid_id))
         self.conn.commit()
         return self.cursor.lastrowid
 

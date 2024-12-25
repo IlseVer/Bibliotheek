@@ -16,3 +16,10 @@ class BoekAuteur:
         ''')
         self.conn.commit()
 
+    #Koppeling tussen boek en auteur
+    def add_boek_auteur(self, boek_id, auteur_id):
+        self.cursor.execute("""
+            INSERT OR IGNORE INTO Boek_Auteur (boek_id, auteur_id) 
+            VALUES (?, ?)
+        """, (boek_id, auteur_id))
+        self.conn.commit()

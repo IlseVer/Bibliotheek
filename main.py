@@ -3,6 +3,8 @@ from database.dbBoek import Boek
 from database.dbPlank import Plank
 from database.dbBeschikbaarheid import Beschikbaarheid
 from database.dbGenre import Genre
+from database.dbAuteur import Auteur
+from database.boek_auteur import BoekAuteur
 
 
 def main():
@@ -12,7 +14,10 @@ def main():
     plank_model = Plank(db.conn)
     beschikbaarheid_model = Beschikbaarheid(db.conn)
     genre_model = Genre(db.conn)
+    auteur_model = Auteur(db.conn)
+    boek_auteur_model = BoekAuteur(db.conn)
 
+    beschikbaarheid_model.insert_default_values()
 
     while True:
         print("\n1. Voeg boek toe")
@@ -29,6 +34,11 @@ def main():
                     break
                 except ValueError:
                     print("Voer een geldig jaartal in.")
+
+            # Auteur toevoegen of ophalen
+            voornaam = input("Voer de voornaam van de auteur in: ")
+            naam = input("Voer de naam van de auteur in: ")
+            auteur_id = auteur_model.add_auteur(naam, voornaam)
 
             genres = genre_model.get_all_genres()
             if not genres:
@@ -59,9 +69,8 @@ def main():
             # Toon beschikbare planken
             planken = plank_model.get_all_planks()
             if not planken:
-                print("Er zijn nog geen planken beschikbaar. Maak eerst een plank aan.")
-                continue
-
+                plank_model.add_defaults_planks()  # Voeg automatisch planken toe
+                planken = plank_model.get_all_planks()  # Haal de planken opnieuw op
 
             print("\nBeschikbare planken:")
             for plank in planken:
@@ -69,15 +78,16 @@ def main():
 
             while True:
                 try:
-                    planknummer = int(input("Kies een plank (of 0 voor geen locatie): "))
-                    if planknummer == 0:
-                        planknummer = None
-                    elif not any(p['id'] == planknummer for p in planken):
+                    plank_id = int(input("Kies een plank (of 0 voor geen locatie): "))
+                    if plank_id == 0:
+                        plank_id = None
+                    elif not any(p['id'] == plank_id for p in planken):
                         print("Ongeldige plank ID")
                         continue
                     break
                 except ValueError:
                     print("Voer een geldig nummer in")
+
 
             # Toon beschikbaarheidsstatussen
             statussen = beschikbaarheid_model.get_all_statuses()
@@ -96,8 +106,11 @@ def main():
                     print("Voer een geldig nummer in")
 
             # Voeg het boek toe
-            boek_id = boek_model.add_boek(titel, publicatiejaar, planknummer, beschikbaarheid_id)
+            boek_id = boek_model.add_boek(titel, publicatiejaar, auteur_id, genre_id, plank_id, beschikbaarheid_id)
             print(f"Boek '{titel}' is toegevoegd met ID {boek_id}")
+
+            # auteur koppelen aan boek
+            boek_auteur_model.add_boek_auteur(boek_id, auteur_id)
 
         elif keuze == '2':
             boeken = boek_model.get_all_books()
@@ -132,7 +145,7 @@ def main():
                     print("-" * 50)
 
                 elif subkeuze == '3':
-                    continue
+                    break
 
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
