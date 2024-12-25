@@ -55,7 +55,7 @@ class DbBibliotheek:
         self.db_plank = Plank(self.conn)
 
         # tabellen aanmaken
-        self.db_auteur.create_table()3.
+        self.db_auteur.create_table()
         self.db_boek.create_table()
         self.db_genre.create_table()
         self.db_boek_auteur.create_table()
