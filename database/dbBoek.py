@@ -106,5 +106,8 @@ class Boek:
         self.conn.commit()
         print(f"Genre van boek met ID {boek_id} is bijgewerkt.")
 
+    def update_boek_plank(self, boek_id, plank_id):
+        self.cursor.execute("UPDATE Boek SET plank_id = ? WHERE id = ?", (plank_id, boek_id))
+        self.conn.commit()
 
 

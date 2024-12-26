@@ -278,7 +278,8 @@ def main():
                     print("1. Titel")
                     print("2. Genre")
                     print("3. Beschikbaarheid")
-                    print("4. Ga terug naar hoofdmenu")
+                    print("4. plaats (plank)")
+                    print("5. Ga terug naar hoofdmenu")
                     wijzig_keuze = input("Maak een keuze: ")
 
                     if wijzig_keuze == '1':  # Titel aanpassen
@@ -310,7 +311,30 @@ def main():
                             print(
                                 f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
 
-                    elif wijzig_keuze == '4':  # Terug naar hoofdmenu
+                    elif wijzig_keuze == '4':  # Plank aanpassen
+                        planken = plank_model.get_all_planks()
+                        print("\nBeschikbare planken:")
+                        for plank in planken:
+                            print(f"{plank['id']}: Plank {plank['nummer']}")
+
+                        while True:
+                            try:
+                                plank_id = int(input("Kies het ID van de nieuwe plank (of 0 voor geen locatie): "))
+                                if plank_id == 0:
+                                    plank_id = None
+                                elif not any(p['id'] == plank_id for p in planken):
+                                    print("Ongeldige plank ID")
+                                    continue
+                                break
+                            except ValueError:
+                                print("Voer een geldig nummer in")
+
+                        # Werk de plank bij voor het boek
+                        boek_model.update_boek_plank(boek_id, plank_id)
+                        print(f"Plank gewijzigd naar: {plank_id if plank_id else 'Geen'}")
+
+
+                    elif wijzig_keuze == '5':  # Terug naar hoofdmenu
                         break
                     else:
                         print("Ongeldige keuze, probeer opnieuw.")
