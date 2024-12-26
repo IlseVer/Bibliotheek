@@ -1,6 +1,5 @@
 import sys
 import csv
-import openpyxl
 import pandas as pd
 
 from database.db_bibliotheek import DbBibliotheek
@@ -29,8 +28,9 @@ def main():
         print("2: Toon alle boeken")
         print("3: Zoek boeken")
         print("4: Beheer genres")
-        print("5: Exporteer boekenlijst naar Excel of csv")
-        print("6: Sluit het programma")
+        print("5: Wijzig gegevens")
+        print("6: Exporteer boekenlijst naar Excel of csv")
+        print("7: Sluit het programma")
         keuze = input("Maak een keuze: ").strip().lower()
 
         # 1: VOEG BOEK TOE
@@ -194,13 +194,14 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
-        # 4: BEHEER GENRES (1: voeg genre toe, 2: toon genres)
+        # 4: BEHEER GENRES
         elif keuze == '4':
             while True:
                 print("\nGenremenu:")
                 print("1. Voeg een nieuw genre toe")
                 print("2. Toon alle genres")
-                print("3. Ga terug naar hoofdmenu")
+                print("3. Wijzig een genre")
+                print("4. Ga terug naar hoofdmenu")
                 subkeuze = input("Maak een keuze: ")
 
                 if subkeuze == '1':
@@ -221,14 +222,105 @@ def main():
                         print(f"{genre['id']}. {genre['genre']}")
                     print("-" * 50)
 
-                elif subkeuze == '3':
+                elif subkeuze == '3':  # Optie voor het wijzigen van een genre
+                    genres = genre_model.get_all_genres()
+                    print("-" * 50)
+                    print("Beschikbare genres om te wijzigen:")
+
+                    for genre in genres:
+                        print(f"{genre['id']}. {genre['genre']}")
+                    print("-" * 50)
+
+                    try:
+                        genre_id = int(input("Voer het ID van het genre in dat je wilt wijzigen: "))
+                        genre = genre_model.get_genre_by_id(genre_id)  # Haal het genre op via het ID
+                        if genre:
+                            nieuwe_naam = input(f"Huidige naam: {genre['genre']}\nVoer de nieuwe naam in: ").strip()
+                            if nieuwe_naam:
+                                genre_model.update_genre(genre_id, nieuwe_naam)
+                                print(f"Genre is succesvol gewijzigd naar: {nieuwe_naam}")
+                            else:
+                                print("Nieuwe naam mag niet leeg zijn.")
+                        else:
+                            print(f"Geen genre gevonden met ID {genre_id}.")
+                    except ValueError:
+                        print("Ongeldige invoer. Kies een geldig genre ID.")
+
+                elif subkeuze == '4':
                     break
 
                 else:
                     print("Ongeldige keuze, probeer opnieuw.")
 
-        # 5: Exporteer boekenlijst naar Excel
+
+        # 5: WIJZIG GEGEVENS
         elif keuze == '5':
+            boeken = boek_model.get_all_books()
+            print("\nBeschikbare boeken:")
+            for boek in boeken:
+                print(f"{boek['id']}: {boek['titel']}")
+
+            try:
+                boek_id = int(input("\nKies het ID van het boek dat je wilt wijzigen: "))
+                boek = boek_model.get_book_by_id(boek_id)
+
+                if boek:
+                    print(f"\nBoek: {boek['titel']} ({boek['publicatiejaar']})")
+                    auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                    print(f"Auteur: {auteur['voornaam']} {auteur['naam']}")
+                    print(f"Genre: {boek['genre_naam']}")
+                    print(f"Plank: {boek['plank_nummer'] if boek['plank_nummer'] else 'Geen'}")
+                    print(f"Beschikbaarheid: {boek['status']}")
+
+                    # Vraag wat ze willen aanpassen
+                    print("\nWat wil je aanpassen?")
+                    print("1. Titel")
+                    print("2. Genre")
+                    print("3. Beschikbaarheid")
+                    print("4. Ga terug naar hoofdmenu")
+                    wijzig_keuze = input("Maak een keuze: ")
+
+                    if wijzig_keuze == '1':  # Titel aanpassen
+                        nieuwe_titel = input(f"Huidige titel: {boek['titel']}\nVoer de nieuwe titel in: ").strip()
+                        if nieuwe_titel:
+                            boek_model.update_book(boek_id, nieuwe_titel)
+                            print(f"Boek titel gewijzigd naar: {nieuwe_titel}")
+
+                    elif wijzig_keuze == '2':  # Genre aanpassen
+                        genres = genre_model.get_all_genres()
+                        print("\nBeschikbare genres:")
+                        for genre in genres:
+                            print(f"{genre['id']}: {genre['genre']}")
+
+                        genre_id = int(input("Kies het ID van het nieuwe genre: "))
+                        if any(g['id'] == genre_id for g in genres):
+                            boek_model.update_boek_genre(boek_id, genre_id)
+                            print(f"Genre gewijzigd naar: {genre_model.get_genre_by_id(genre_id)['genre']}")
+
+                    elif wijzig_keuze == '3':  # Beschikbaarheid aanpassen
+                        statussen = beschikbaarheid_model.get_all_statuses()
+                        print("\nBeschikbare statussen:")
+                        for status in statussen:
+                            print(f"{status['id']}: {status['status']}")
+
+                        beschikbaarheid_id = int(input("Kies het ID van de nieuwe beschikbaarheid: "))
+                        if any(s['id'] == beschikbaarheid_id for s in statussen):
+                            boek_model.update_boek_beschikbaarheid(boek_id, beschikbaarheid_id)
+                            print(
+                                f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
+
+                    elif wijzig_keuze == '4':  # Terug naar hoofdmenu
+                        break
+                    else:
+                        print("Ongeldige keuze, probeer opnieuw.")
+                else:
+                    print("Geen boek gevonden met dat ID.")
+            except ValueError:
+                print("Ongeldige invoer. Kies een geldig boek ID.")
+
+
+        # 6: Exporteer boekenlijst naar Excel
+        elif keuze == '6':
             while True:
                 print("\nWelk formaat wenst u de exporteren?")
                 print("1: CSV")
@@ -303,7 +395,7 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer het opnieuw.")
 
-        elif keuze == '6' or keuze == 'exit':
+        elif keuze == '7' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
             sys.exit()

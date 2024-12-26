@@ -23,11 +23,11 @@ class Genre:
         return genres
 
     def add_genre_if_not_exists(self, genre_name):
-        query_select = "SELECT id FROM genres WHERE genre = ?"
-        query_insert = "INSERT INTO genres (genre) VALUES (?)"
+        query_select = "SELECT id FROM Genre WHERE naam = ?"
+        query_insert = "INSERT INTO Genre (naam) VALUES (?)"
         cursor = self.conn.cursor()
 
-        # Controleer of het genre al bestaat
+        # Controleren of het genre al bestaat
         cursor.execute(query_select, (genre_name,))
         result = cursor.fetchone()
 
@@ -37,4 +37,23 @@ class Genre:
             cursor.execute(query_insert, (genre_name,))
             self.conn.commit()
             return cursor.lastrowid
+
+    def get_genre_by_id(self, genre_id):
+        # Haal het genre op via het ID
+        query = "SELECT * FROM Genre WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (genre_id,))
+        result = cursor.fetchone()  # Haal één resultaat op (de eerste match)
+
+        if result:
+            return {'id': result[0], 'genre': result[1]}
+        else:
+            return None
+
+    # naam genre bijwerken
+    def update_genre(self, genre_id, nieuwe_naam):
+        query = "UPDATE Genre SET naam = ? WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (nieuwe_naam, genre_id))
+        self.conn.commit()
 
