@@ -1,3 +1,4 @@
+import datetime
 import sys
 import csv
 import pandas as pd
@@ -334,8 +335,12 @@ def main():
                         # boekenlijst ophalen
                         boeken = boek_model.get_all_books()
 
+                        # timestamp
+                        timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%Hu%M')
+                        bestandsnaam = f'boekenlijst_{timestamp}.csv'
+
                         # Open het CSV bestand voor schrijven
-                        with open('boekenlijst.csv', 'w', newline='', encoding='utf-8') as csvfile:
+                        with open(bestandsnaam, 'w', newline='', encoding='utf-8') as csvfile:
                             veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Plank', 'Status', 'Genre']
                             writer = csv.DictWriter(csvfile, fieldnames=veldnamen)
 
@@ -354,7 +359,7 @@ def main():
                                     'Genre': boek['genre_naam']
                                 })
 
-                        print("Boekenlijst is succesvol geëxporteerd naar 'boekenlijst.csv'.")
+                        print(f"Boekenlijst is succesvol geëxporteerd naar '{bestandsnaam}'.")
 
                     except Exception as e:
                         print(f"Fout bij het exporteren van de boekenlijst: {e}")
@@ -362,6 +367,10 @@ def main():
                 elif subkeuze == '2':
                     try:
                         boeken = boek_model.get_all_books()
+
+                        #timestamp
+                        timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%Hu%M')
+                        bestandsnaam = f'boekenlijst_{timestamp}.xlsx'
 
                         # lijst van dictionaries voor de boeken maken
                         data = []
@@ -379,9 +388,9 @@ def main():
 
                         # Maak een DataFrame van de data en schrijf naar een Excel-bestand
                         df = pd.DataFrame(data)
-                        df.to_excel('boekenlijst.xlsx', index=False, engine='openpyxl')
+                        df.to_excel(f'{bestandsnaam}.xlsx', index=False, engine='openpyxl')
 
-                        print("Boekenlijst is succesvol geëxporteerd naar 'boekenlijst.xlsx'.")
+                        print(f"Boekenlijst is succesvol geëxporteerd naar '{bestandsnaam}'.")
 
                     except Exception as e:
                         print(f"Fout bij het exporteren van de boekenlijst naar Excel: {e}")
