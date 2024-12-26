@@ -72,6 +72,39 @@ class Boek:
             print(f"Geen boeken gevonden voor genre '{genre}'")
         return resultaten
 
+    def get_book_by_id(self, boek_id):
+        query = """
+        SELECT Boek.*, Plank.nummer as plank_nummer, 
+               Beschikbaarheid.status, Genre.naam as genre_naam
+        FROM Boek
+        LEFT JOIN Plank ON Boek.plank_id = Plank.id
+        LEFT JOIN Beschikbaarheid ON Boek.beschikbaarheid_id = Beschikbaarheid.id
+        LEFT JOIN Genre ON Boek.genre_id = Genre.id
+        WHERE Boek.id = ?
+        """
+        self.cursor.execute(query, (boek_id,))
+        return self.cursor.fetchone()
+
+    #titel bijwerken
+    def update_book(self, boek_id, nieuwe_titel):
+        query = "UPDATE Boek SET titel = ? WHERE id = ?"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (nieuwe_titel, boek_id))
+        self.conn.commit()
+
+    # status beschikbaarheid bijwerken
+    def update_boek_beschikbaarheid(self, boek_id, beschikbaarheid_id):
+        query = "UPDATE Boek SET beschikbaarheid_id = ? WHERE id = ?"
+        self.cursor.execute(query, (beschikbaarheid_id, boek_id))
+        self.conn.commit()
+        print(f"Beschikbaarheid van boek met ID {boek_id} is bijgewerkt.")
+
+
+    def update_boek_genre(self, boek_id, genre_id):
+        query = "UPDATE Boek SET genre_id = ? WHERE id = ?"
+        self.cursor.execute(query, (genre_id, boek_id))
+        self.conn.commit()
+        print(f"Genre van boek met ID {boek_id} is bijgewerkt.")
 
 
 
