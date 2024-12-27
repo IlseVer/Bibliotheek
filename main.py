@@ -4,6 +4,8 @@ import csv
 import pandas as pd
 from tabulate import tabulate
 
+from UI.visualizations import BookVisualizer
+
 from database.db_bibliotheek import DbBibliotheek
 from database.dbBoek import Boek
 from database.dbPlank import Plank
@@ -11,7 +13,6 @@ from database.dbBeschikbaarheid import Beschikbaarheid
 from database.dbGenre import Genre
 from database.dbAuteur import Auteur
 from database.boek_auteur import BoekAuteur
-
 
 def main():
     db = DbBibliotheek('database/bib.db')
@@ -23,6 +24,8 @@ def main():
     auteur_model = Auteur(db.conn)
     boek_auteur_model = BoekAuteur(db.conn)
 
+    visualizer = BookVisualizer(genre_model, boek_model, beschikbaarheid_model)
+
     beschikbaarheid_model.insert_default_values()
 
     while True:
@@ -32,6 +35,7 @@ def main():
         print("4: Beheer genres")
         print("5: Wijzig gegevens")
         print("6: Exporteer boekenlijst naar Excel of csv")
+        print("7: Statistieken")
         print("0: exit")
         keuze = input("Maak een keuze: ").strip().lower()
 
@@ -502,12 +506,34 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer het opnieuw.")
 
+        elif keuze == '7':
+            while True:
+                print("\nStatistieken:")
+                print("1: Boekverdeling per genre")
+                print("2: Aantal boeken per publicatiejaar")
+                print("3: Terug naar hoofdmenu")
+                print("0: exit")
+                subkeuze = input("Maak een keuze: ")
+
+                if subkeuze == '1':
+                    visualizer.plot_genre()
+                elif subkeuze == '2':
+                    visualizer.plot_publication_years()
+                elif subkeuze == '3':
+                    break
+                elif subkeuze == '0' or subkeuze == 'exit':
+                    print("Programma wordt afgesloten...")
+                    print("Programma afgesloten.")
+                    sys.exit()
+                else:
+                    print("Ongeldige keuze, probeer het opnieuw.")
         elif keuze == '0' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
             sys.exit(1)
         else:
             print("Ongeldige keuze, probeer het opnieuw.")
+
 
 if __name__ == "__main__":
     main()
