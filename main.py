@@ -2,6 +2,7 @@ import datetime
 import sys
 import csv
 import pandas as pd
+from tabulate import tabulate
 
 from database.db_bibliotheek import DbBibliotheek
 from database.dbBoek import Boek
@@ -31,12 +32,20 @@ def main():
         print("4: Beheer genres")
         print("5: Wijzig gegevens")
         print("6: Exporteer boekenlijst naar Excel of csv")
-        print("7: Sluit het programma")
+        print("0: exit")
         keuze = input("Maak een keuze: ").strip().lower()
 
         # 1: VOEG BOEK TOE
         if keuze == '1':
-            titel = input("Voer de titel van het boek in: ")
+            # Titel valideren
+            while True:
+                titel = input("Voer de titel van het boek in: ").strip()
+                if titel: # Titel mag niet leeg zijn
+                    break
+                else:
+                    print("Titel mag niet leeg zijn. Probeer opnieuw.")
+
+            # Publicatiejaar valideren
             while True:
                 try:
                     publicatiejaar = int(input("Voer het publicatiejaar in: "))
@@ -44,9 +53,22 @@ def main():
                 except ValueError:
                     print("Voer een geldig jaartal in.")
 
-            # Auteur toevoegen of ophalen
-            voornaam = input("Voer de voornaam van de auteur in: ")
-            naam = input("Voer de naam van de auteur in: ")
+            # Voornaam valideren
+            while True:
+                voornaam = input("Voer de voornaam van de auteur in: ")
+                if voornaam.strip():
+                    break
+                else:
+                    print("Voornaam mag niet leeg zijn. Probeer opnieuw.")
+
+            # naam valideren
+            while True:
+                naam = input("Voer de naam van de auteur in: ")
+                if naam.strip():
+                    break
+                else:
+                    print("Naam mag niet leeg zijn. Probeer opnieuw.")
+
             auteur_id = auteur_model.add_auteur(naam, voornaam)
 
             #controleren als er al genres aanwezig zijn
@@ -75,8 +97,6 @@ def main():
                         if genre_id == 0:
                             nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
                             genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
-                            if genre_id:
-                                print(f"Genre '{nieuw_genre}' is toegevoegd.")
                         elif not any(g['id'] == genre_id for g in genres):
                             print("Ongeldige genre ID")
                             continue
@@ -134,15 +154,25 @@ def main():
         # 2: TOON ALLE BOEKEN
         elif keuze == '2':
             boeken = boek_model.get_all_books()
-            print("\nAlle boeken:")
-            for boek in boeken:
-                # naam van de auteur ophalen via het auteur_id
-                auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
-                auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+            if not boeken:
+                print("\nEr zijn momenteel geen boeken beschikbaar.")
+            else:
+                print("\nAlle boeken:")
+                tabel_data = []
+                for boek in boeken:
+                    auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                    auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
 
-                print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
-                print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
-                print("-" * 50)
+                    tabel_data.append([
+                        boek['id'],
+                        boek['titel'],
+                        auteur_naam,
+                        boek['publicatiejaar'],
+                        f"plank {boek['plank_nummer'] or 'Geen'}",
+                        boek['status']
+                    ])
+
+                print(tabulate(tabel_data, headers=['ID', 'Titel', 'Auteur', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
 
         # 3: ZOEK Boeken (1: op titel of 2:op genre)
         elif keuze == '3':
@@ -151,44 +181,69 @@ def main():
                 print("1: Zoek op titel")
                 print("2: Zoek op genre")
                 print("3: Ga terug naar hoofdmenu")
-                print("4: exit")
+                print("0: exit")
                 subkeuze = input("Maak een keuze: ")
 
                 if subkeuze == '1':
                     zoekterm = input("Voer de titel (of deel van de titel) in: ")
                     resultaten = boek_model.search_books_by_title(zoekterm)
+                    if not resultaten:
+                        print(f"Geen titel gevonden waarin '{zoekterm}' voorkomt.")
 
-                    if resultaten:
+                    else:
                         print(f"\nZoekresultaten voor titel '{zoekterm}':")
+                        tabel_titel = []
                         for boek in resultaten:
                             auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                             auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
-                            print(f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Jaar: {boek['publicatiejaar']}")
-                            print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
-                            print("-" * 50)
-                    else:
-                        print(f"Geen titel gevonden met de zoekterm '{zoekterm}'")
+
+                            genre_id = boek['genre_id']
+
+                            genre = genre_model.get_genre_by_id(genre_id)
+
+
+                            tabel_titel.append([
+                                boek['id'],
+                                boek['titel'],
+                                auteur_naam,
+                                genre['genre'] if genre else "Onbekend",
+                                boek['publicatiejaar'],
+                                f"plank {boek['plank_nummer'] or 'Geen'}",
+                                boek['status']
+                            ])
+
+                        print(tabulate(tabel_titel, headers=['ID', 'Titel', 'Auteur','Genre', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
+
 
                 elif subkeuze == '2':
                     zoekterm = input("Voer een genre in (of een deel ervan, bijv. 'thr' voor 'thriller'): ")
                     resultaten = boek_model.search_books_by_genre(zoekterm)
-
-                    if resultaten:
+                    if not resultaten:
+                        print(f"Geen genre gevonden waarin '{zoekterm}' voorkomt.")
+                    else:
                         print(f"\nZoekresultaten voor genre '{zoekterm}':")
+                        tabel_genre = []
                         for boek in resultaten:
                             auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                             auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
                             genre = boek['genre_naam']
-                            print(
-                                f"{boek['id']}) {boek['titel']}, Auteur: {auteur_naam}, Genre: {genre}, Jaar: {boek['publicatiejaar']}")
-                            print(f"Plank {boek['plank_nummer'] or 'Geen'}, Status: {boek['status']}")
-                            print("-" * 50)
+
+                            tabel_genre.append([
+                                boek['id'],
+                                boek['titel'],
+                                auteur_naam,
+                                genre,
+                                boek['publicatiejaar'],
+                                f"plank {boek['plank_nummer'] or 'Geen'}",
+                                boek['status']
+                            ])
+                        print(tabulate(tabel_genre, headers=['ID', 'Titel', 'Auteur', 'Genre','Jaar', 'Locatie', 'Status'], tablefmt='simple'))
 
 
                 elif subkeuze == '3':
                     break
 
-                elif subkeuze == '4' or subkeuze == 'exit':
+                elif subkeuze == '0' or subkeuze == 'exit':
                     print("Programma wordt afgesloten...")
                     print("Programma afgesloten.")
                     sys.exit()
@@ -209,8 +264,6 @@ def main():
                     nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
                     try:
                         genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
-                        if genre_id:
-                            print(f"Genre '{nieuw_genre}' toegevoegd met ID {genre_id}.")
                     except Exception as e:
                         print(f"Fout bij het toevoegen van het genre: {e}")
 
@@ -239,7 +292,7 @@ def main():
                             nieuwe_naam = input(f"Huidige naam: {genre['genre']}\nVoer de nieuwe naam in: ").strip()
                             if nieuwe_naam:
                                 genre_model.update_genre(genre_id, nieuwe_naam)
-                                print(f"Genre is succesvol gewijzigd naar: {nieuwe_naam}")
+                                print(f"'{genre['genre']}' is succesvol gewijzigd naar '{nieuwe_naam}'")
                             else:
                                 print("Nieuwe naam mag niet leeg zijn.")
                         else:
@@ -258,8 +311,23 @@ def main():
         elif keuze == '5':
             boeken = boek_model.get_all_books()
             print("\nBeschikbare boeken:")
+            tabel_wijzig = []
             for boek in boeken:
-                print(f"{boek['id']}: {boek['titel']}")
+                auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                genre = boek['genre_naam']
+
+                tabel_wijzig.append([
+                    boek['id'],
+                    boek['titel'],
+                    auteur_naam,
+                    genre,
+                    boek['publicatiejaar'],
+                    f"plank {boek['plank_nummer'] or 'Geen'}",
+                    boek['status']
+                ])
+
+            print(tabulate(tabel_wijzig, headers=['ID', 'Titel', 'Auteur', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
 
             try:
                 boek_id = int(input("\nKies het ID van het boek dat je wilt wijzigen: "))
@@ -277,9 +345,10 @@ def main():
                     print("\nWat wil je aanpassen?")
                     print("1. Titel")
                     print("2. Genre")
-                    print("3. Beschikbaarheid")
-                    print("4. plaats (plank)")
-                    print("5. Ga terug naar hoofdmenu")
+                    print("3. plaats (plank)")
+                    print("4. Beschikbaarheid")
+                    print("5. Hoofmenu")
+                    print("0. exit")
                     wijzig_keuze = input("Maak een keuze: ")
 
                     if wijzig_keuze == '1':  # Titel aanpassen
@@ -299,19 +368,7 @@ def main():
                             boek_model.update_boek_genre(boek_id, genre_id)
                             print(f"Genre gewijzigd naar: {genre_model.get_genre_by_id(genre_id)['genre']}")
 
-                    elif wijzig_keuze == '3':  # Beschikbaarheid aanpassen
-                        statussen = beschikbaarheid_model.get_all_statuses()
-                        print("\nBeschikbare statussen:")
-                        for status in statussen:
-                            print(f"{status['id']}: {status['status']}")
-
-                        beschikbaarheid_id = int(input("Kies het ID van de nieuwe beschikbaarheid: "))
-                        if any(s['id'] == beschikbaarheid_id for s in statussen):
-                            boek_model.update_boek_beschikbaarheid(boek_id, beschikbaarheid_id)
-                            print(
-                                f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
-
-                    elif wijzig_keuze == '4':  # Plank aanpassen
+                    elif wijzig_keuze == '3':  # Plank aanpassen
                         planken = plank_model.get_all_planks()
                         print("\nBeschikbare planken:")
                         for plank in planken:
@@ -333,9 +390,25 @@ def main():
                         boek_model.update_boek_plank(boek_id, plank_id)
                         print(f"Plank gewijzigd naar: {plank_id if plank_id else 'Geen'}")
 
+                    elif wijzig_keuze == '4':  # Beschikbaarheid aanpassen
+                        statussen = beschikbaarheid_model.get_all_statuses()
+                        print("\nBeschikbare statussen:")
+                        for status in statussen:
+                            print(f"{status['id']}: {status['status']}")
+
+                        beschikbaarheid_id = int(input("Kies het ID van de nieuwe beschikbaarheid: "))
+                        if any(s['id'] == beschikbaarheid_id for s in statussen):
+                            boek_model.update_boek_beschikbaarheid(boek_id, beschikbaarheid_id)
+                            print(
+                                f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
+
 
                     elif wijzig_keuze == '5':  # Terug naar hoofdmenu
-                        break
+                        continue
+                    elif wijzig_keuze == '0':  # exit
+                        print("Programma wordt afgesloten...")
+                        print("Programma afgesloten.")
+                        sys.exit(1)
                     else:
                         print("Ongeldige keuze, probeer opnieuw.")
                 else:
@@ -351,7 +424,7 @@ def main():
                 print("1: CSV")
                 print("2: Excel")
                 print("3: Ga terug naar hoofdmenu")
-                print("4: exit")
+                print("0: exit")
                 subkeuze = input("Maak een keuze: ")
 
                 if subkeuze == '1':
@@ -365,7 +438,7 @@ def main():
 
                         # Open het CSV bestand voor schrijven
                         with open(bestandsnaam, 'w', newline='', encoding='utf-8') as csvfile:
-                            veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Plank', 'Status', 'Genre']
+                            veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Genre','Plank', 'Status']
                             writer = csv.DictWriter(csvfile, fieldnames=veldnamen)
 
                             writer.writeheader()  # Schrijf de header (kolomnamen)
@@ -378,9 +451,10 @@ def main():
                                     'Titel': boek['titel'],
                                     'Auteur': auteur_naam,
                                     'Publicatiejaar': boek['publicatiejaar'],
+                                    'Genre': boek['genre_naam'],
                                     'Plank': boek['plank_nummer'] or 'Geen',
-                                    'Status': boek['status'],
-                                    'Genre': boek['genre_naam']
+                                    'Status': boek['status']
+
                                 })
 
                         print(f"Boekenlijst is succesvol geëxporteerd naar '{bestandsnaam}'.")
@@ -405,9 +479,9 @@ def main():
                                 'Titel': boek['titel'],
                                 'Auteur': auteur_naam,
                                 'Publicatiejaar': boek['publicatiejaar'],
+                                'Genre': boek['genre_naam'],
                                 'Plank': boek['plank_nummer'] or 'Geen',
-                                'Status': boek['status'],
-                                'Genre': boek['genre_naam']
+                                'Status': boek['status']
                             })
 
                         # Maak een DataFrame van de data en schrijf naar een Excel-bestand
@@ -421,17 +495,17 @@ def main():
 
                 elif subkeuze == '3':
                     break
-                elif subkeuze == '4' or subkeuze == 'exit':
+                elif subkeuze == '0' or subkeuze == '0':
                     print("Programma wordt afgesloten...")
                     print("Programma afgesloten.")
                     sys.exit()
                 else:
                     print("Ongeldige keuze, probeer het opnieuw.")
 
-        elif keuze == '7' or keuze == 'exit':
+        elif keuze == '0' or keuze == 'exit':
             print("Programma wordt afgesloten...")
             print("Programma afgesloten.")
-            sys.exit()
+            sys.exit(1)
         else:
             print("Ongeldige keuze, probeer het opnieuw.")
 

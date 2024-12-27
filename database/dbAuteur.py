@@ -19,7 +19,6 @@ class Auteur:
         self.cursor.execute("SELECT * FROM Auteur WHERE naam = ? AND voornaam = ?", (naam, voornaam))
         existing_auteur = self.cursor.fetchone()
         if existing_auteur:
-            print(f"Auteur {naam} {voornaam} bestaat al.")
             return existing_auteur['id']
         else:
             self.cursor.execute("INSERT INTO Auteur (naam, voornaam) VALUES (?, ?)", (naam, voornaam))

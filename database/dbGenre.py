@@ -32,10 +32,12 @@ class Genre:
         result = cursor.fetchone()
 
         if result:  # Bestaat al
+            print(f"Het genre '{genre_name}' bestaat al.")
             return result['id']
         else:  # Voeg een nieuw genre toe
             cursor.execute(query_insert, (genre_name,))
             self.conn.commit()
+            print(f"Genre '{genre_name}' is succesvol toegevoegd.")
             return cursor.lastrowid
 
     def get_genre_by_id(self, genre_id):
