@@ -15,7 +15,7 @@ from database.dbAuteur import Auteur
 from database.boek_auteur import BoekAuteur
 
 def main():
-    db = DbBibliotheek('database/bib.db')
+    db = DbBibliotheek('database/bibliotheek.db')
 
     boek_model = Boek(db.conn)
     plank_model = Plank(db.conn)
@@ -34,8 +34,9 @@ def main():
         print("3: Zoek boeken")
         print("4: Beheer genres")
         print("5: Wijzig gegevens")
-        print("6: Exporteer boekenlijst naar Excel of csv")
-        print("7: Statistieken")
+        print("6: Verwijder boek")
+        print("7: Exporteer boekenlijst naar Excel of csv")
+        print("8: Statistieken")
         print("0: exit")
         keuze = input("Maak een keuze: ").strip().lower()
 
@@ -84,7 +85,6 @@ def main():
                     nieuw_genre = input("Voer de naam van het nieuwe genre in: ")
                     if nieuw_genre.strip():
                         genre_id = genre_model.add_genre_if_not_exists(nieuw_genre)
-                        print(f"Genre '{nieuw_genre}' toegevoegd met ID {genre_id}.")
                         break
                     else:
                         print("Genre naam mag niet leeg zijn. Probeer opnieuw.")
@@ -314,7 +314,7 @@ def main():
         # 5: WIJZIG GEGEVENS
         elif keuze == '5':
             boeken = boek_model.get_all_books()
-            print("\nBeschikbare boeken:")
+            print("\nBOEKEN:")
             tabel_wijzig = []
             for boek in boeken:
                 auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
@@ -331,14 +331,14 @@ def main():
                     boek['status']
                 ])
 
-            print(tabulate(tabel_wijzig, headers=['ID', 'Titel', 'Auteur', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
+            print(tabulate(tabel_wijzig, headers=['ID', 'Titel', 'Auteur', 'Genre','Jaar', 'Locatie', 'Status'], tablefmt='simple'))
 
             try:
                 boek_id = int(input("\nKies het ID van het boek dat je wilt wijzigen: "))
                 boek = boek_model.get_book_by_id(boek_id)
 
                 if boek:
-                    print(f"\nBoek: {boek['titel']} ({boek['publicatiejaar']})")
+                    print(f"\nBoek: {boek['titel']}")
                     auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                     print(f"Auteur: {auteur['voornaam']} {auteur['naam']}")
                     print(f"Genre: {boek['genre_naam']}")
@@ -403,8 +403,8 @@ def main():
                         beschikbaarheid_id = int(input("Kies het ID van de nieuwe beschikbaarheid: "))
                         if any(s['id'] == beschikbaarheid_id for s in statussen):
                             boek_model.update_boek_beschikbaarheid(boek_id, beschikbaarheid_id)
-                            print(
-                                f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
+                            print(f"Beschikbaarheid gewijzigd naar: {beschikbaarheid_model.get_all_statuses()[beschikbaarheid_id - 1]['status']}")
+
 
 
                     elif wijzig_keuze == '5':  # Terug naar hoofdmenu
@@ -420,9 +420,50 @@ def main():
             except ValueError:
                 print("Ongeldige invoer. Kies een geldig boek ID.")
 
-
-        # 6: Exporteer boekenlijst naar Excel
+        # 6: VERWIJDER BOEK
         elif keuze == '6':
+            boeken = boek_model.get_all_books()
+            print("BOEKEN:")
+            tabel_verwijder = []
+            for boek in boeken:
+                auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+                auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                genre = boek['genre_naam']
+
+                tabel_verwijder.append([
+                    boek['id'],
+                    boek['titel'],
+                    auteur_naam,
+                    genre,
+                    boek['publicatiejaar'],
+                    f"plank {boek['plank_nummer'] or 'Geen'}",
+                    boek['status']
+                ])
+
+            print(tabulate(tabel_verwijder, headers=['ID', 'Titel', 'Auteur', 'Genre','Jaar', 'Locatie', 'Status'], tablefmt='simple'))
+
+            try:
+                boek_id = int(input("\nKies het ID van het boek dat je wilt verwijderen: "))
+                boek = boek_model.get_book_by_id(boek_id)
+
+                if boek:
+                    print(f"\nBoek: {boek['titel']} ({boek['publicatiejaar']})")
+                    auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
+
+                    bevestiging = input(f"Weet je zeker dat je boek '{boek['titel']}' wilt verwijderen? (ja/nee): ")
+                    if bevestiging.lower() == 'ja':
+                        boek_model.delete_boek(boek_id)
+                        print(f"Boek '{boek['titel']}' is verwijderd.")
+                    else:
+                        print("Verwijderen geannuleerd.")
+                else:
+                    print("Geen boek gevonden met dat ID.")
+            except ValueError:
+                print("Ongeldige invoer. Kies een geldig boek ID.")
+
+
+        # 7: Exporteer boekenlijst naar Excel
+        elif keuze == '7':
             while True:
                 print("\nWelk formaat wenst u de exporteren?")
                 print("1: CSV")
@@ -506,7 +547,7 @@ def main():
                 else:
                     print("Ongeldige keuze, probeer het opnieuw.")
 
-        elif keuze == '7':
+        elif keuze == '8':
             while True:
                 print("\nStatistieken:")
                 print("1: Boekverdeling per genre")

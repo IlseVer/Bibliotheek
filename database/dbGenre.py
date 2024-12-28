@@ -5,7 +5,6 @@ class Genre:
         self.create_table()
 
     def create_table(self):
-        """tabel Genre aanmaken."""
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS Genre (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

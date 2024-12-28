@@ -10,7 +10,6 @@ Het is ontwikkeld in Python en maakt gebruik van een SQLite-database om de gegev
   - [Stappen](#stappen)
 - [Functionaliteiten](#functionaliteiten)
 
-
 ## Installatie
 
 ### Vereisten
@@ -53,11 +52,11 @@ Het is ontwikkeld in Python en maakt gebruik van een SQLite-database om de gegev
    
 ## Functionaliteiten
 ### 1. Voeg boek toe
-- Je kunt een nieuw boek toevoegen aan je bibliotheek door de titel, publicatiejaar, auteur, genre, locatie en beschikbaarheid in te voeren. 
+- Je kunt een nieuw boek toevoegen aan je bibliotheek door de **titel, publicatiejaar, auteur, genre, locatie** en **beschikbaarheid** in te voeren. 
 Dit maakt het makkelijk om je collectie up-to-date te houden.
 
 ### 2. Toon alle boeken
-- Deze functie toont een overzicht van alle boeken die in je bibliotheek zijn opgeslagen.
+- Deze functie toont een **overzicht van alle boeken** die in je bibliotheek zijn opgeslagen.
 
 ### 3. Zoek boeken
 - op titel
@@ -72,9 +71,10 @@ Dit maakt het makkelijk om je collectie up-to-date te houden.
  - titel
  - genre
  - locatie
- - beschikbaarheid.
+ - beschikbaarheid
 
-### 6. Exporteer boekenlijst naar Excel of csv
+### 6. Verwijder boek
+### 7. Exporteer boekenlijst naar Excel of csv
 - Exporteer de boekenlijst naar een Excel- of csv-bestand die wordt voorzien van een timestamp.
 
 ### 8. Statistieken

@@ -4,7 +4,6 @@ class Boek:
         self.cursor = self.conn.cursor()
 
     def create_table(self):
-        """tabel Boek aanmaken."""
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS Boek (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +41,6 @@ class Boek:
         return self.cursor.fetchall()
 
     def search_books_by_title(self, title):
-        """Zoek boeken op basis van de titel."""
         query = """
         SELECT Boek.*, Plank.nummer as plank_nummer, Beschikbaarheid.status
         FROM Boek
@@ -55,7 +53,6 @@ class Boek:
         return self.cursor.fetchall()
 
     def search_books_by_genre(self, genre):
-        """Zoek boeken op basis van het genre."""
         genre_pattern = f"%{genre.lower()}%"  # Zorgen dat de input case-insensitive wordt behandeld
         self.cursor.execute("""
             SELECT Boek.*, Plank.nummer as plank_nummer, Beschikbaarheid.status, Genre.naam as genre_naam
@@ -110,4 +107,8 @@ class Boek:
         self.cursor.execute("UPDATE Boek SET plank_id = ? WHERE id = ?", (plank_id, boek_id))
         self.conn.commit()
 
+    def delete_boek(self, boek_id):
+        query = "DELETE FROM Boek WHERE id = ?"
+        self.cursor.execute(query, (boek_id,))
+        self.conn.commit()
 

@@ -6,6 +6,8 @@ __pycache__/
 # verborgen map van de virtuele omgeving
 .venv
 venv/
+.env
+env/
 
 # de database zelf
 database/bibliotheek.db

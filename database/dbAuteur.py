@@ -4,7 +4,6 @@ class Auteur:
         self.cursor = self.conn.cursor()
 
     def create_table(self):
-        """tabel Auteur aanmaken."""
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS Auteur (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +27,6 @@ class Auteur:
             return auteur_id
 
     def get_all_auteurs(self):
-        """Haal alle auteurs op."""
         self.cursor.execute('SELECT * FROM Auteur')
         return self.cursor.fetchall()
 
