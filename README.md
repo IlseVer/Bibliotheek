@@ -6,8 +6,10 @@ Het is ontwikkeld in Python en maakt gebruik van een SQLite-database om de gegev
 
 ## Inhoud
 - [Installatie](#installatie)
-- [Gebruik](#gebruik)
-- [Structuur](#structuur)
+  - [Vereisten](#vereisten)
+  - [Stappen](#stappen)
+- [Functionaliteiten](#functionaliteiten)
+
 
 ## Installatie
 
@@ -49,9 +51,38 @@ Het is ontwikkeld in Python en maakt gebruik van een SQLite-database om de gegev
    ```bash
    python main.py
    
-## Gebruik
+## Functionaliteiten
+1. `Voeg boek toe`  
+Je kunt een nieuw boek toevoegen aan je bibliotheek door de titel, publicatiejaar, auteur, genre, locatie en beschikbaarheid in te voeren. 
+Dit maakt het makkelijk om je collectie up-to-date te houden.  
 
-## Structuur
-```
+
+2. `Toon alle boeken`  
+Deze functie toont een overzicht van alle boeken die in je bibliotheek zijn opgeslagen.
+
+
+3. `Zoek boeken`  
+Je kunt boeken zoeken op titel en genre.
+Dit maakt het eenvoudiger om snel een specifiek boek te vinden.
+
+
+4. `Beheer genres`  
+Toon alle grenres, voeg nieuwe genres toe, bewerk bestaande genres.
+
+
+5. `Wijzig gegevens`  
+Werk bestaande boekgegevens bij, zoals de titel, genre, locatie en beschikbaarheid. 
+Dit zorgt ervoor dat je bibliotheek altijd actuele en juiste informatie bevat.
+
+
+6. `Exporteer boekenlijst naar Excel of csv`  
+Exporteer de boekenlijst naar een Excel- of csv-bestand die wordt voorzien van een timestamp.
+
+
+8. `Statistieken`  
+Genereer statistieken over je bibliotheek, zoals het aantal boeken per genre, aantal boeken per publicatiejaar. 
+Dit biedt inzicht in je verzameling.
+
+   
 
 
