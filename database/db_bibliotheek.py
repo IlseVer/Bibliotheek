@@ -3,7 +3,7 @@ import sqlite3
 from database.dbBoek import Boek
 from database.dbAuteur import Auteur
 from database.dbGenre import Genre
-from database.boek_auteur import BoekAuteur
+from database.dbBoek_auteur import BoekAuteur
 from database.dbBeschikbaarheid import Beschikbaarheid
 from database.dbPlank import Plank
 

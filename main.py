@@ -12,7 +12,7 @@ from database.dbPlank import Plank
 from database.dbBeschikbaarheid import Beschikbaarheid
 from database.dbGenre import Genre
 from database.dbAuteur import Auteur
-from database.boek_auteur import BoekAuteur
+from database.dbBoek_auteur import BoekAuteur
 
 def main():
     db = DbBibliotheek('database/bibliotheek.db')
@@ -166,17 +166,19 @@ def main():
                 for boek in boeken:
                     auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                     auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                    genre = boek['genre_naam']
 
                     tabel_data.append([
                         boek['id'],
                         boek['titel'],
                         auteur_naam,
+                        genre,
                         boek['publicatiejaar'],
                         f"plank {boek['plank_nummer'] or 'Geen'}",
                         boek['status']
                     ])
 
-                print(tabulate(tabel_data, headers=['ID', 'Titel', 'Auteur', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
+                print(tabulate(tabel_data, headers=['ID', 'Titel', 'Auteur','Genre', 'Jaar', 'Locatie', 'Status'], tablefmt='simple'))
 
         # 3: ZOEK Boeken (1: op titel of 2:op genre)
         elif keuze == '3':

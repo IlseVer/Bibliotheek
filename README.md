@@ -4,6 +4,8 @@ Hiermee kun je boeken toevoegen, bijwerken en beheren, evenals de locatie en bes
 
 Het is ontwikkeld in Python en maakt gebruik van een SQLite-database om de gegevens op te slaan.
 
+Indien er geen databasebestand aanwezig is, wordt er automatisch een database aangemaakt die je vervolgens zelf kunt vullen met boeken.
+
 ## Inhoud
 - [Installatie](#installatie)
   - [Vereisten](#vereisten)
