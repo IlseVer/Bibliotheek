@@ -1,4 +1,5 @@
 import datetime
+import os
 import sys
 import csv
 import pandas as pd
@@ -288,7 +289,7 @@ def main():
                     print("Beschikbare genres om te wijzigen:")
 
                     for genre in genres:
-                        print(f"{genre['id']}. {genre['genre']}")
+                        print(f"{genre['id']}: {genre['genre']}")
                     print("-" * 50)
 
                     try:
@@ -449,9 +450,6 @@ def main():
                 boek = boek_model.get_book_by_id(boek_id)
 
                 if boek:
-                    print(f"\nBoek: {boek['titel']} ({boek['publicatiejaar']})")
-                    auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
-
                     bevestiging = input(f"Weet je zeker dat je boek '{boek['titel']}' wilt verwijderen? (ja/nee): ")
                     if bevestiging.lower() == 'ja':
                         boek_model.delete_boek(boek_id)
@@ -482,9 +480,10 @@ def main():
                         # timestamp
                         timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%Hu%M')
                         bestandsnaam = f'boekenlijst_{timestamp}.csv'
+                        bestandsnaam_pad = os.path.join('export_files', bestandsnaam)
 
                         # Open het CSV bestand voor schrijven
-                        with open(bestandsnaam, 'w', newline='', encoding='utf-8') as csvfile:
+                        with open(bestandsnaam_pad, 'w', newline='', encoding='utf-8') as csvfile:
                             veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Genre','Plank', 'Status']
                             writer = csv.DictWriter(csvfile, fieldnames=veldnamen)
 
@@ -501,7 +500,6 @@ def main():
                                     'Genre': boek['genre_naam'],
                                     'Plank': boek['plank_nummer'] or 'Geen',
                                     'Status': boek['status']
-
                                 })
 
                         print(f"Boekenlijst is succesvol geëxporteerd naar '{bestandsnaam}'.")
@@ -516,6 +514,7 @@ def main():
                         #timestamp
                         timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%Hu%M')
                         bestandsnaam = f'boekenlijst_{timestamp}.xlsx'
+                        bestandsnaam_pad = os.path.join('export_files', bestandsnaam)
 
                         # lijst van dictionaries voor de boeken maken
                         data = []
@@ -533,7 +532,7 @@ def main():
 
                         # Maak een DataFrame van de data en schrijf naar een Excel-bestand
                         df = pd.DataFrame(data)
-                        df.to_excel(f'{bestandsnaam}.xlsx', index=False, engine='openpyxl')
+                        df.to_excel(f'{bestandsnaam_pad}.xlsx', index=False, engine='openpyxl')
 
                         print(f"Boekenlijst is succesvol geëxporteerd naar '{bestandsnaam}'.")
 

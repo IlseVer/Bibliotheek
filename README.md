@@ -87,6 +87,7 @@ Dit maakt het makkelijk om je collectie up-to-date te houden.
 ### 6. Verwijder boek
 ### 7. Exporteer boekenlijst naar Excel of csv
 - Exporteer de boekenlijst naar een Excel- of csv-bestand die wordt voorzien van een timestamp.
+- De bestanden worden opgeslagen in de map `exports_files` om de structuur van het project overzichtelijk te houden.
 
 ### 8. Statistieken
 - Aantal boeken per genre
