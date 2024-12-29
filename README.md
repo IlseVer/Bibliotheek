@@ -24,23 +24,31 @@ Indien er geen databasebestand aanwezig is, wordt er automatisch een database aa
    git clone https://github.com/IlseVer/Bibliotheek.git
    ```
 
-2. Maak een virtual environment aan:
+2. Maak een virtual environment aan:  
    ```bash
    python -m venv .venv
    ```
-   Activateer de virtual environment:
-   ```bash
-   source .venv/bin/activate  # Voor Mac/Linux
-   .\.venv\Scripts\Activate.ps1   # Voor Windows Powershell
-   .venv\Scripts\activate # Voor Windows cmd
-   ```
+     
+3. Activeer de virtual environment:  
+   - Voor **Mac/Linux**:
+     ```bash
+     source .venv/bin/activate
+      ```
+   - Voor **Windows Powershell**:
+     ```powershell
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - Voor **Windows cmd**:  
+     ```cmd
+     .venv\Scripts\activate
+     ```
 
-3. Installeer de benodigde Python-pakketten:
-   ```bash
+4. Installeer de benodigde Python-pakketten:
+   ``` bash
    pip install -r requirements.txt
    ```
 
-4. Plaats het databasebestand 'bibliotheek.db' in de map `database`:
+5. Plaats het databasebestand 'bibliotheek.db' in de map `database`:
    ```bash
    Bibliotheek/
      ├── database/
@@ -48,7 +56,7 @@ Indien er geen databasebestand aanwezig is, wordt er automatisch een database aa
      │      ├── ...
      ├── ...
       ```
-5. Start het programma:
+6. Start het programma:
    ```bash
    python main.py
    ```
