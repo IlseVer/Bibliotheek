@@ -51,6 +51,7 @@ Indien er geen databasebestand aanwezig is, wordt er automatisch een database aa
 5. Start het programma:
    ```bash
    python main.py
+   ```
    
 ## Functionaliteiten
 ### 1. Voeg boek toe
@@ -61,8 +62,8 @@ Dit maakt het makkelijk om je collectie up-to-date te houden.
 - Deze functie toont een **overzicht van alle boeken** die in je bibliotheek zijn opgeslagen.
 
 ### 3. Zoek boeken
-- op titel
-- op genre
+- Op titel
+- Op genre
 
 ### 4. Beheer genres
 - **Toevoegen** genres
@@ -70,20 +71,20 @@ Dit maakt het makkelijk om je collectie up-to-date te houden.
 - **Wijzig** een genre
 
 ### 5. Wijzig gegevens
- - titel
- - genre
- - locatie
- - beschikbaarheid
+ - Titel
+ - Genre
+ - Locatie
+ - Beschikbaarheid
 
 ### 6. Verwijder boek
 ### 7. Exporteer boekenlijst naar Excel of csv
 - Exporteer de boekenlijst naar een Excel- of csv-bestand die wordt voorzien van een timestamp.
 
 ### 8. Statistieken
-- aantal boeken per genre
-- aantal boeken per publicatiejaar
+- Aantal boeken per genre
+- Aantal boeken per publicatiejaar
 
 
-   
+
 
 

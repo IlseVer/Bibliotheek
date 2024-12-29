@@ -27,25 +27,15 @@ class BookVisualizer:
 
     def plot_publication_years(self):
         boeken = self.boek_model.get_all_books()
-        year_counts = {}
+        years = [boek['publicatiejaar'] for boek in boeken]
 
-        # Het aantal boeken per publicatiejaar tellen
-        for boek in boeken:
-            year = boek['publicatiejaar']
-            if year in year_counts:
-                year_counts[year] += 1
-            else:
-                year_counts[year] = 1
-
-        # Jaren sorteren en het aantal boeken per jaar
-        years = sorted(year_counts.keys())
-        counts = [year_counts[year] for year in years]
-
-        # Lijngrafiek
-        plt.plot(years, counts, marker='o', color='blue', linewidth=2)
+        # Histogram
+        plt.hist(years, bins=range(min(years), max(years) + 1, 1), edgecolor='black', color='green')
         plt.xlabel('Publicatiejaar')
         plt.ylabel('Aantal boeken')
+        plt.yticks([int(y) for y in plt.yticks()[0]])  # om op de y-as gehele getallen te hebben zonder een extra package te installeren (y-ticks converteren naar gehele getallen
+        plt.grid(axis='y', linestyle='-', color='grey', linewidth=0.2) # raster, duidelijker
         plt.title('Aantal boeken per publicatiejaar')
-        plt.xticks(rotation=45)
+        plt.xticks(range(min(years), max(years) + 1, 1), rotation=45)
         plt.tight_layout()
         plt.show()
