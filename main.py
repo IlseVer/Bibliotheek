@@ -4,9 +4,9 @@ import csv
 import pandas as pd
 from tabulate import tabulate
 
-from UI.visualizations import BookVisualizer
+from visualizations.visualizations import BookVisualizer
 
-from database.db_bibliotheek import DbBibliotheek
+from database.db_Manager import DbBibliotheek
 from database.dbBoek import Boek
 from database.dbPlank import Plank
 from database.dbBeschikbaarheid import Beschikbaarheid
