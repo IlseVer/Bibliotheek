@@ -20,6 +20,7 @@ class BookVisualizer:
         plt.bar(genre_counts.keys(), genre_counts.values())
         plt.xlabel('Genres')
         plt.ylabel('Aantal boeken')
+        plt.yticks([int(y) for y in plt.yticks()[0]])  # om op de y-as gehele getallen te hebben zonder een extra package te installeren (y-ticks converteren naar gehele getallen
         plt.title('Boekverdeling per genre')
         plt.xticks(rotation=45)
         plt.tight_layout() # voor ruimte tussen de labels, anders komen mijn labels buiten beeld

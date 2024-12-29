@@ -461,7 +461,6 @@ def main():
             except ValueError:
                 print("Ongeldige invoer. Kies een geldig boek ID.")
 
-
         # 7: Exporteer boekenlijst naar Excel
         elif keuze == '7':
             while True:
@@ -484,7 +483,7 @@ def main():
 
                         # Open het CSV bestand voor schrijven
                         with open(bestandsnaam_pad, 'w', newline='', encoding='utf-8') as csvfile:
-                            veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Genre','Plank', 'Status']
+                            veldnamen = ['Titel', 'Auteur', 'Publicatiejaar', 'Genre','Locatie', 'Status']
                             writer = csv.DictWriter(csvfile, fieldnames=veldnamen)
 
                             writer.writeheader()  # Schrijf de header (kolomnamen)
@@ -493,12 +492,13 @@ def main():
                             for boek in boeken:
                                 auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                                 auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                                locatie = f"plank {boek['plank_nummer']}" if boek['plank_nummer'] else 'Geen'
                                 writer.writerow({
                                     'Titel': boek['titel'],
                                     'Auteur': auteur_naam,
                                     'Publicatiejaar': boek['publicatiejaar'],
                                     'Genre': boek['genre_naam'],
-                                    'Plank': boek['plank_nummer'] or 'Geen',
+                                    'Locatie': locatie,
                                     'Status': boek['status']
                                 })
 
@@ -521,12 +521,13 @@ def main():
                         for boek in boeken:
                             auteur = auteur_model.get_auteur_by_id(boek['auteur_id'])
                             auteur_naam = f"{auteur['voornaam']} {auteur['naam']}" if auteur else "Onbekend"
+                            locatie = f"plank {boek['plank_nummer']}" if boek['plank_nummer'] else 'Geen'
                             data.append({
                                 'Titel': boek['titel'],
                                 'Auteur': auteur_naam,
                                 'Publicatiejaar': boek['publicatiejaar'],
                                 'Genre': boek['genre_naam'],
-                                'Plank': boek['plank_nummer'] or 'Geen',
+                                'Locatie': locatie,
                                 'Status': boek['status']
                             })
 
